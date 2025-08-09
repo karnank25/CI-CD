@@ -15,9 +15,9 @@ jobs:
       - name: Copy HTML files to EC2 nginx folder
         uses: appleboy/scp-action@master
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_KEY }}
           source: "."
           target: "/usr/share/nginx/html"
 
