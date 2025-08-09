@@ -1,4 +1,4 @@
-wqname: Deploy HTML to AWS EC2
+name: Deploy HTML to AWS EC2
 
 on:
   push:
