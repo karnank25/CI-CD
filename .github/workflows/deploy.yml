@@ -1,4 +1,4 @@
-name: Deploy HTML to AWS EC2
+name: Deploy to EC2
 
 on:
   push:
@@ -8,38 +8,26 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 1: Remove old files
-      - name: Clear old files on EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_key }}
-          script: |
-            sudo rm -rf /usr/share/nginx/html/*
-
-      # Step 2: Copy new files
-      - name: Upload HTML to EC2
+      - name: Copy files to EC2 tmp folder
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.EC2_key }}
-          source: "index.html,css/*,js/*,images/*"
-          target: "/usr/share/nginx/html"
-          overwrite: true
+          key: ${{ secrets.EC2_KEY }}
+          source: "index.html"
+          target: "/tmp/deploy"
 
-      # Step 3: Restart Nginx
-      - name: Restart Nginx
+      - name: Move files into nginx folder with sudo
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
-          key: ${{ secrets.EC2_key }}
+          key: ${{ secrets.EC2_KEY }}
           script: |
-            sudo systemctl restart nginx
+            sudo rm -rf /usr/share/nginx/html/*
+            sudo mv /tmp/deploy/* /usr/share/nginx/html/
+            sudo chown -R nginx:nginx /usr/share/nginx/html
